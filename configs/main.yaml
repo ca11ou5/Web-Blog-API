@@ -1,0 +1,10 @@
+server :
+  port : 8080
+db :
+  host : localhost
+  user : postgres
+  password : root
+  dbname : postgres
+  port : 5432
+  sslmode : disable
+
