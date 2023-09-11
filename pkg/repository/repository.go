@@ -7,6 +7,9 @@ import (
 
 type Article interface {
 	CreateArticle(article *models.Article) error
+	GetArticleByID(id int) (*models.Article, error)
+	GetAllArticles() (*[]models.Article, error)
+	DeleteArticleByID(id int) error
 }
 
 type Repository struct {

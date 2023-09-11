@@ -15,7 +15,11 @@ func NewHandler(service *service.Service) *Handler {
 
 func (h *Handler) InitRoutes() *mux.Router {
 	router := mux.NewRouter()
-	router.HandleFunc("/create", h.CreateArticle).Methods("POST")
-	router.HandleFunc("/{name}", h.GetArticle).Methods("GET")
+
+	router.HandleFunc("/articles", h.CreateArticle).Methods("POST")
+	router.HandleFunc("/articles", h.GetArticleByID).Methods("GET")
+	router.HandleFunc("/", h.GetAllArticles).Methods("GET")
+	router.HandleFunc("/articles", h.DeleteArticleByID).Methods("DELETE")
+
 	return router
 }

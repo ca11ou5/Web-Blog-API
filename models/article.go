@@ -5,12 +5,13 @@ import "time"
 type Article struct {
 	ID        uint
 	Name      string
+	Slug      string    `gorm:"unique_index"`
 	Status    bool      `gorm:"default:false"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
-	Images    []Image
-	Texts     []Text
-	Codes     []Code
-	Titles    []Title
+	Images    []Image   `gorm:"constraint:OnDelete:CASCADE;"`
+	Texts     []Text    `gorm:"constraint:OnDelete:CASCADE;"`
+	Codes     []Code    `gorm:"constraint:OnDelete:CASCADE;"`
+	Titles    []Title   `gorm:"constraint:OnDelete:CASCADE;"`
 }
 
 type Image struct {
