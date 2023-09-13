@@ -2,67 +2,61 @@ package handler
 
 import (
 	"blog/models"
-	"encoding/json"
-	"io/ioutil"
-	"log"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 )
 
-func (h *Handler) CreateArticle(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer r.Body.Close()
-
-	article := &models.Article{}
-
-	err = json.Unmarshal(body, &article)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = h.service.CreateArticle(article)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	w.WriteHeader(204)
+func (h *Handler) GetAllArticles(c *gin.Context) {
+	articles := h.service.Article.GetAllArticles()
+	c.JSON(http.StatusOK, articles)
 }
 
-func (h *Handler) GetArticleByID(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+func (h *Handler) GetArticleByID(c *gin.Context) {
+	userID, err := strconv.ParseUint(c.Param("id"), 10, 0)
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	article, err := h.service.GetArticleByID(id)
+	article, err := h.service.Article.GetArticleByID(uint(userID))
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
 
-	jsonData, err := json.Marshal(article)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
+	c.JSON(http.StatusOK, article)
 }
 
-func (h *Handler) GetAllArticles(w http.ResponseWriter, r *http.Request) {
-	articles, err := h.service.GetAllArticles()
+func (h *Handler) CreateArticle(c *gin.Context) {
+	article := models.Article{}
+	err := c.ShouldBindJSON(&article)
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	jsonData, err := json.Marshal(articles)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
+	articleID, err := h.service.CreateArticle(&article)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"id": articleID})
 }
 
-func (h *Handler) DeleteArticleByID(w http.ResponseWriter, r *http.Request) {
-	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+func (h *Handler) DeleteArticleByID(c *gin.Context) {
+	id, err := strconv.ParseUint(c.Param("id"), 10, 0)
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	err = h.service.DeleteArticleByID(id)
+	err = h.service.Article.DeleteArticleByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{})
 }

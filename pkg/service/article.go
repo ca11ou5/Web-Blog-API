@@ -7,26 +7,26 @@ import (
 )
 
 type ArticleService struct {
-	repo *repository.Repository
+	repo repository.Article
 }
 
-func NewArticleService(repo *repository.Repository) *ArticleService {
+func NewArticleService(repo repository.Article) *ArticleService {
 	return &ArticleService{repo: repo}
 }
 
-func (s *ArticleService) CreateArticle(article *models.Article) error {
+func (s *ArticleService) GetAllArticles() *[]models.Article {
+	return s.repo.GetAllArticles()
+}
+
+func (s *ArticleService) GetArticleByID(id uint) (*models.Article, error) {
+	return s.repo.GetArticleByID(id)
+}
+
+func (s *ArticleService) CreateArticle(article *models.Article) (uint, error) {
 	article.Slug = slug.Make(article.Name)
 	return s.repo.CreateArticle(article)
 }
 
-func (s *ArticleService) GetArticleByID(id int) (*models.Article, error) {
-	return s.repo.GetArticleByID(id)
-}
-
-func (s *ArticleService) GetAllArticles() (*[]models.Article, error) {
-	return s.repo.GetAllArticles()
-}
-
-func (s *ArticleService) DeleteArticleByID(id int) error {
+func (s *ArticleService) DeleteArticleByID(id uint) error {
 	return s.repo.DeleteArticleByID(id)
 }

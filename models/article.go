@@ -3,9 +3,9 @@ package models
 import "time"
 
 type Article struct {
-	ID        uint
-	Name      string
-	Slug      string    `gorm:"unique_index"`
+	ID        uint      `json:"-"`
+	Name      string    `gorm:"not null" binding:"required"`
+	Slug      string    `gorm:"unique_index" json:"-"`
 	Status    bool      `gorm:"default:false"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	Images    []Image   `gorm:"constraint:OnDelete:CASCADE;"`
@@ -15,29 +15,29 @@ type Article struct {
 }
 
 type Image struct {
-	ID        uint
-	ArticleID uint
+	ID        uint `json:"-"`
+	ArticleID uint `json:"-"`
 	Order     uint
 	Content   []byte
 }
 
 type Text struct {
-	ID        uint
-	ArticleID uint
+	ID        uint `json:"-"`
+	ArticleID uint `json:"-"`
 	Order     uint
 	Content   string
 }
 
 type Code struct {
-	ID        uint
-	ArticleID uint
+	ID        uint `json:"-"`
+	ArticleID uint `json:"-"`
 	Order     uint
 	Content   string
 }
 
 type Title struct {
-	ID        uint
-	ArticleID uint
+	ID        uint `json:"-"`
+	ArticleID uint `json:"-"`
 	Order     uint
 	Content   string
 }

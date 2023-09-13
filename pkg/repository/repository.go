@@ -6,16 +6,25 @@ import (
 )
 
 type Article interface {
-	CreateArticle(article *models.Article) error
-	GetArticleByID(id int) (*models.Article, error)
-	GetAllArticles() (*[]models.Article, error)
-	DeleteArticleByID(id int) error
+	GetAllArticles() *[]models.Article
+	GetArticleByID(id uint) (*models.Article, error)
+	CreateArticle(article *models.Article) (uint, error)
+	DeleteArticleByID(id uint) error
+}
+
+type Authorization interface {
+	CreateUser(user *models.User) (uint, error)
+	GetUser(username, password string) (*models.User, error)
 }
 
 type Repository struct {
 	Article
+	Authorization
 }
 
 func NewRepository(db *gorm.DB) *Repository {
-	return &Repository{Article: NewArticleRepository(db)}
+	return &Repository{
+		Article:       NewArticleRepository(db),
+		Authorization: NewAuthorizationRepository(db),
+	}
 }

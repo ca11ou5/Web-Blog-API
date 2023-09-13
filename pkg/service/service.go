@@ -6,16 +6,26 @@ import (
 )
 
 type Article interface {
-	CreateArticle(article *models.Article) error
-	GetArticleByID(id int) (*models.Article, error)
-	GetAllArticles() (*[]models.Article, error)
-	DeleteArticleByID(id int) error
+	GetAllArticles() *[]models.Article
+	GetArticleByID(id uint) (*models.Article, error)
+	CreateArticle(article *models.Article) (uint, error)
+	DeleteArticleByID(id uint) error
+}
+
+type Authorization interface {
+	CreateUser(user *models.User) (uint, error)
+	GenerateToken(username, password string) (string, error)
+	ParseToken(token string) (uint, error)
 }
 
 type Service struct {
 	Article
+	Authorization
 }
 
 func NewService(repo *repository.Repository) *Service {
-	return &Service{Article: NewArticleService(repo)}
+	return &Service{
+		Article:       NewArticleService(repo.Article),
+		Authorization: NewAuthorizationService(repo.Authorization),
+	}
 }
